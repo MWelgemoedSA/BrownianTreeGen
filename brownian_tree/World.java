@@ -69,10 +69,9 @@ public class World {
 
 	public void saveToFile(String filename) {
 		int biggestValue = 0;
-		for (Object value : placedPoints.values()) {
-			int iVal = (Integer)value;
-			if (iVal > biggestValue) {
-				biggestValue = iVal;
+		for (Integer value : placedPoints.values()) {
+			if (value > biggestValue) {
+				biggestValue = value;
 			}
 		}
 		saveToFile(filename, biggestValue);
