@@ -29,7 +29,15 @@ public class World {
 	public boolean hasPixel(Coordinate c) {
 		return placedPoints.containsKey(c);
 	}
-
+	
+	//Returns 0 if the pixel isn't in the HashMap
+	public int getPixelValue(Coordinate coordinate) {
+		if (placedPoints.containsKey(coordinate)) {
+			return placedPoints.get(coordinate);
+		}
+		return 0;
+	}
+	
 	public int pixelCount() {
 		return placedPoints.size();
 	}
@@ -40,7 +48,11 @@ public class World {
 	}
 
 	public void place(Coordinate c) {
-		placedPoints.put(c, placedPoints.size()+1);
+		place(c, placedPoints.size()+1);
+	}
+	
+	public void place(Coordinate c, int val) {
+		placedPoints.put(c, val);
 	}
 	
 	public void print() {
@@ -56,22 +68,36 @@ public class World {
 	}
 
 	public void saveToFile(String filename) {
+		int biggestValue = 0;
+		for (Object value : placedPoints.values()) {
+			int iVal = (Integer)value;
+			if (iVal > biggestValue) {
+				biggestValue = iVal;
+			}
+		}
+		saveToFile(filename, biggestValue);
+	}
+	
+	public void saveToFile(String filename, int maxPixelValue) {
 		BufferedImage image = new BufferedImage(xSize, ySize, BufferedImage.TYPE_INT_RGB);
 		
-		int factorForRGB = (int)Math.pow(2, 24) / placedPoints.size(); //RGB as a 24 bit int is spread out evenly across the pixels, which creates a nice wavy pattern from dark to light
+		int factorForRGB = (int)Math.pow(2, 24) / maxPixelValue; //RGB as a 24 bit int is spread out evenly across the pixels, which creates a nice wavy pattern from dark to light
 		Coordinate coordinate = new Coordinate();
 		for (int x = 0; x < xSize; x++) {
 			coordinate.x = x;
 			for (int y = 0; y < ySize; y++) {
 				coordinate.y = y;
 				int rgb = 0xffffff;
-				if (placedPoints.containsKey(coordinate)) {
+				
+				int pixelValue = getPixelValue(coordinate);
+				if (pixelValue > 0) {
 					if (useColouredPixels) {
-						rgb = placedPoints.get(coordinate) * factorForRGB;
+						rgb = pixelValue * factorForRGB;
 					} else {
 						rgb = 0;	
-					}
+					}					
 				}
+
 		        	image.setRGB(x, y, rgb);
 			}
 		}

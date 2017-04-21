@@ -32,7 +32,6 @@ public class Generator {
 
 	private final World world;
 	private final String outputName = "out.png";
-	private final Random randomGen = new Random();
 	
 	Generator(int xsize, int ysize) {
 		world = new World(xsize, ysize);
@@ -54,8 +53,7 @@ public class Generator {
 		//Find an empty spot to start on
 		Coordinate c = new Coordinate(0, 0);
 		do {
-			c.x = randomGen.nextInt(maxX);
-			c.y = randomGen.nextInt(maxY);
+			c.randomize(maxX, maxY);
 		} while (world.hasPixel(c));
 		
 		//Now randomly jiggle our pixel around until it hits another one
@@ -64,19 +62,8 @@ public class Generator {
 		do { 
 			c.x = newC.x;
 			c.y = newC.y;
-
-			//Calculate the step to take
-			int xstep = 0;
-			int ystep = 0;
-			while(xstep == 0 && ystep == 0) { //0 step not allowed
-				xstep = randomGen.nextInt(3) - 1;
-				ystep = randomGen.nextInt(3) - 1;
-			}
-
-			newC.x += xstep;
-			newC.y += ystep;
-
-			newC.wrapAround(maxX, maxY); //Wrap around the edge of the world
+			
+			newC.takeRandomStep(maxX, maxY);
 		} while (!world.hasPixel(newC));
 		
 		world.place(c);
