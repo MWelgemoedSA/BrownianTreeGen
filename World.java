@@ -8,9 +8,9 @@ import javax.imageio.ImageIO;
 
 public class World {
 	HashMap<Coordinate, Integer> placedPoints;
-	private int xSize;
-	private int ySize;
-	private boolean useColouredPixels = true;
+	private final int xSize;
+	private final int ySize;
+	private final boolean useColouredPixels = true;
 
 	World(int xSize, int ySize) {
 		this.xSize = xSize;

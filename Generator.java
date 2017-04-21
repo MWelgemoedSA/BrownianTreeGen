@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Generator {
 	public static void main(String... args) {
-		int argCount = args.length;
+		final int argCount = args.length;
 		
 		//Defaults overridden by command line arguments
 		int xSize = 500;
@@ -30,14 +30,14 @@ public class Generator {
 		instance.run(pixelCount);
 	}
 
-	private World world;
-	private String outputName = "out.png";
-	private Random randomGen = new Random();
-
+	private final World world;
+	private final String outputName = "out.png";
+	private final Random randomGen = new Random();
+	
 	Generator(int xsize, int ysize) {
 		world = new World(xsize, ysize);
 	}
-
+	
 	private void run(int totalPixels) {
 		world.placeCenterPixel();		
 		for(int i = 0; i != totalPixels; i++) {
