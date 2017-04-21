@@ -12,7 +12,7 @@ public class World {
 	private final int ySize;
 	private final boolean useColouredPixels = true;
 
-	World(int xSize, int ySize) {
+	public World(int xSize, int ySize) {
 		this.xSize = xSize;
 		this.ySize = ySize;
 
@@ -104,7 +104,7 @@ public class World {
 		try {
 			ImageIO.write(image, "png", outputFile);
 		} catch (IOException e) {
-			System.out.println("Error writing image: " + outputFile);
+			System.err.println("Error writing image: " + outputFile);
 		}
 	}
 }
