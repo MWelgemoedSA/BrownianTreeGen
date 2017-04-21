@@ -55,7 +55,7 @@ public class World {
 		System.out.print("\n\n\n");
 	}
 
-	public void saveToFile(String Filename) {
+	public void saveToFile(String filename) {
 		BufferedImage image = new BufferedImage(xSize, ySize, BufferedImage.TYPE_INT_RGB);
 		
 		int factorForRGB = (int)Math.pow(2, 24) / placedPoints.size(); //RGB as a 24 bit int is spread out evenly across the pixels, which creates a nice wavy pattern from dark to light
@@ -75,7 +75,7 @@ public class World {
 		        	image.setRGB(x, y, rgb);
 			}
 		}
-		File outputFile = new File(Filename);
+		File outputFile = new File(filename);
 		try {
 			ImageIO.write(image, "png", outputFile);
 		} catch (IOException e) {
