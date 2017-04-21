@@ -1,14 +1,19 @@
 import java.util.HashMap;
 import java.util.Random;
+import java.io.File;
+import java.io.IOException;
+
+import java.awt.image.BufferedImage;
+import javax.imageio.ImageIO;
 
 public class BrownianTree {
 	public static void main(String... args) {
 		int argCount = args.length;
 		
 		//Defaults overridden by command line arguments
-		int xSize = 100;
-		int ySize = 100;
-		int pixelCount = 2000;
+		int xSize = 500;
+		int ySize = 500;
+		int pixelCount = 30000;
 		
 		try {
 			if (argCount >= 1) {
@@ -30,6 +35,7 @@ public class BrownianTree {
 	}
 
 	World world;
+	String outputName = "out.png";
 	Random randomGen = new Random();
 
 	BrownianTree(int xsize, int ysize) {
@@ -40,8 +46,9 @@ public class BrownianTree {
 		world.placeCenterPixel();		
 		for(int i = 0; i != totalPixels; i++) {
 			placePixel();
+			System.out.println("Placed " + (i+1) + "/" + totalPixels);
 		}
-		world.print();
+		world.saveToFile(outputName);
 	}
 
 	void placePixel() {
@@ -84,6 +91,11 @@ class Coordinate {
 	public int x;
 	public int y;
 
+	Coordinate() {
+		x = 0;
+		y = 0;
+	}
+
 	Coordinate(int x, int y) {
 		this.x = x;
 		this.y = y;
@@ -121,6 +133,7 @@ class World {
 	HashMap<Coordinate, Integer> placedPoints;
 	private int xSize;
 	private int ySize;
+	private boolean useColouredPixels = true;
 
 	World(int xSize, int ySize) {
 		this.xSize = xSize;
@@ -164,4 +177,33 @@ class World {
 		}
 		System.out.print("\n\n\n");
 	}
+
+	public void saveToFile(String Filename) {
+		BufferedImage image = new BufferedImage(xSize, ySize, BufferedImage.TYPE_INT_RGB);
+		
+		int factorForRGB = (int)Math.pow(2, 24) / placedPoints.size(); //RGB as a 24 bit int is spread out evenly across the pixels, which creates a nice wavy pattern from dark to light
+		Coordinate coordinate = new Coordinate();
+		for (int x = 0; x < xSize; x++) {
+			coordinate.x = x;
+			for (int y = 0; y < ySize; y++) {
+				coordinate.y = y;
+				int rgb = 0xffffff;
+				if (placedPoints.containsKey(coordinate)) {
+					if (useColouredPixels) {
+						rgb = placedPoints.get(coordinate) * factorForRGB;
+					} else {
+						rgb = 0;	
+					}
+				}
+		        	image.setRGB(x, y, rgb);
+			}
+		}
+		File outputFile = new File(Filename);
+		try {
+			ImageIO.write(image, "png", outputFile);
+		} catch (IOException e) {
+			System.out.println("Error writing image: " + outputFile);
+		}
+	}
 }
+
