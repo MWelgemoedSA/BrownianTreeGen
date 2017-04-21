@@ -14,6 +14,7 @@ public class Coordinate {
 		this.y = y;
 	}
 	
+	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof Coordinate)) {
 			return false;
@@ -23,6 +24,7 @@ public class Coordinate {
 		return x == other.x && y == other.y;
 	}
 
+	@Override
 	public int hashCode() {
 		return x * 1000 + y;
 	}
