@@ -6,9 +6,9 @@ It's a super simple java exercise, although I later plan to try and do complicat
 
 Example of a Brownian Tree generated with it:
 
-![Brownian Tree](https://https://raw.githubusercontent.com/MWelgemoedSA/BrownianTreeGen/master/ReadmeImages/BrownianTree.png)
+![Brownian Tree](https://raw.githubusercontent.com/MWelgemoedSA/BrownianTreeGen/master/ReadmeImages/BrownianTree.png)
 
 An example of the motion test output to double-check the RNG:
 
-![Motion test image](https://https://raw.githubusercontent.com/MWelgemoedSA/BrownianTreeGen/master/ReadmeImages/motionTest.png)
+![Motion test image](https://raw.githubusercontent.com/MWelgemoedSA/BrownianTreeGen/master/ReadmeImages/motionTest.png)
 
