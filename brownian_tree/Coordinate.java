@@ -5,7 +5,7 @@ import java.util.Random;
 public class Coordinate {
 	public int x;
 	public int y;
-	private static final Random RANDOM_GEN = new Random();
+	private Random randomGen;
 	
 	public Coordinate() {
 		x = 0;
@@ -15,6 +15,10 @@ public class Coordinate {
 	public Coordinate(int x, int y) {
 		this.x = x;
 		this.y = y;
+	}
+	
+	public void setRandom(Random randomGen) {
+		this.randomGen = randomGen;
 	}
 	
 	@Override
@@ -37,8 +41,8 @@ public class Coordinate {
 		int xstep = 0;
 		int ystep = 0;
 		while(xstep == 0 && ystep == 0) { //0 step not allowed
-			xstep = RANDOM_GEN.nextInt(3) - 1;
-			ystep = RANDOM_GEN.nextInt(3) - 1;
+			xstep = randomGen.nextInt(3) - 1;
+			ystep = randomGen.nextInt(3) - 1;
 		}
 		
 		this.x += xstep;
@@ -49,8 +53,8 @@ public class Coordinate {
 	}
 	
 	public void randomize(int maxX, int maxY) {
-		this.x = RANDOM_GEN.nextInt(maxX);
-		this.y = RANDOM_GEN.nextInt(maxY);
+		this.x = randomGen.nextInt(maxX);
+		this.y = randomGen.nextInt(maxY);
 	}
 	
 	private void wrapAround(int maxX, int maxY) {

@@ -1,13 +1,13 @@
 package brownian_tree;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 
 public class World {
-	HashMap<Coordinate, Integer> placedPoints;
+	ConcurrentHashMap<Coordinate, Integer> placedPoints;
 	private final int xSize;
 	private final int ySize;
 	private final boolean useColouredPixels = true;
@@ -16,7 +16,7 @@ public class World {
 		this.xSize = xSize;
 		this.ySize = ySize;
 
-		placedPoints = new HashMap<>();
+		placedPoints = new ConcurrentHashMap<>();
 	}
 
 	public void placeCenterPixel() {
@@ -38,7 +38,7 @@ public class World {
 		return 0;
 	}
 	
-	public int pixelCount() {
+	public int getPixelCount() {
 		return placedPoints.size();
 	}
 	
@@ -47,8 +47,8 @@ public class World {
 		place(c);
 	}
 
-	public void place(Coordinate c) {
-		place(c, placedPoints.size()+1);
+	public synchronized void place(Coordinate c) { //Synchronized, otherwise the counter is subject to a race condition
+		place(c, getPixelCount()+1);
 	}
 	
 	public void place(Coordinate c, int val) {

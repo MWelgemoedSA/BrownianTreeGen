@@ -8,6 +8,7 @@ public class Generator {
 		int xSize = 500;
 		int ySize = 500;
 		int pixelCount = 30000;
+		int threadCount = 3;
 		
 		try {
 			if (argCount >= 1) {
@@ -19,51 +20,44 @@ public class Generator {
 			if (argCount >= 3) {
 				pixelCount = Integer.parseInt(args[2]);
 			}
+			if (argCount >= 4) {
+				threadCount = Integer.parseInt(args[3]);
+			}
 		} catch (NumberFormatException e) {
-        		System.err.println("Command line arguments are xSize, ySize, pixelCount, all must be integers");
+        		System.err.println("Command line arguments are xSize, ySize, pixelCount, threadcount, all must be integers");
 			System.exit(1);
 		}
 		
-		Generator instance = new Generator(xSize, ySize);
+		Generator instance = new Generator(xSize, ySize, threadCount);
 		instance.run(pixelCount);
 	}
 
 	private final World world;
 	private final String outputName = "out.png";
+	private final int threadCount;
 	
-	private Generator(int xsize, int ysize) {
+	private Generator(int xsize, int ysize, int threadCount) {
+		this.threadCount = threadCount;
 		world = new World(xsize, ysize);
 	}
 	
 	private void run(int totalPixels) {
-		world.placeCenterPixel();		
-		for(int i = 0; i != totalPixels; i++) {
-			placePixel();
-			System.out.println("Placed " + (i+1) + "/" + totalPixels);
-		}
-		world.saveToFile(outputName);
-	}
-
-	private void placePixel() {
-		final int maxX = world.getXSize();
-		final int maxY = world.getYSize();
-		
-		//Find an empty spot to start on
-		Coordinate c = new Coordinate(0, 0);
-		do {
-			c.randomize(maxX, maxY);
-		} while (world.hasPixel(c));
-		
-		//Now randomly jiggle our pixel around until it hits another one
-		//Once it hits a second pixel, the position it had before the hit is taken
-		Coordinate newC = new Coordinate(c.x, c.y);
-		do { 
-			c.x = newC.x;
-			c.y = newC.y;
+		try {
+			world.placeCenterPixel();
 			
-			newC.takeRandomStep(maxX, maxY);
-		} while (!world.hasPixel(newC));
-		
-		world.place(c);
+			Thread[] threadList = new Thread[threadCount];
+			for(int i = 0; i != threadCount; i++) {			
+				threadList[i] = new GeneratorThread("Thread-" + (i+1), world, totalPixels);
+				threadList[i].start();
+			}
+
+			for(int i = 0; i != threadCount; i++) {			
+				threadList[i].join();
+			}
+			
+			world.saveToFile(outputName);
+		} catch (InterruptedException e) {
+			System.err.println("Error, threads interrupted");
+		}
 	}
 }
