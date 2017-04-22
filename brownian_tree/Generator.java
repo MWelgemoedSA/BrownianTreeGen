@@ -1,5 +1,7 @@
 package brownian_tree;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Generator {
 	public static void main(String... args) {
 		final int argCount = args.length;
@@ -45,9 +47,10 @@ public class Generator {
 		try {
 			world.placeCenterPixel();
 			
+			ReentrantLock placeLock = new ReentrantLock();
 			Thread[] threadList = new Thread[threadCount];
 			for(int i = 0; i != threadCount; i++) {			
-				threadList[i] = new GeneratorThread("Thread-" + (i+1), world, totalPixels);
+				threadList[i] = new GeneratorThread("Thread-" + (i+1), world, totalPixels, placeLock);
 				threadList[i].start();
 			}
 

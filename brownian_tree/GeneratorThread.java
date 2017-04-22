@@ -1,17 +1,21 @@
 package brownian_tree;
 
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantLock;
 
 class GeneratorThread extends Thread {
 	final private int maxPixelCount;
 	final private World world;
 	final private Random randomGen;
 	final private String threadName; //Mainly for debugging
+	final private ReentrantLock placeLock; //This lock is used to ensure a single thread at a time places a pixel
 	
-	public GeneratorThread(String threadName, World world, int maxPixelCount) {
+	public GeneratorThread(String threadName, World world, int maxPixelCount, ReentrantLock placeLock) {
 		this.threadName = threadName;
-		this.maxPixelCount = maxPixelCount;
 		this.world = world;
+		this.maxPixelCount = maxPixelCount;
+		this.placeLock = placeLock;
+
 		this.randomGen = new Random();
 	}
 	
@@ -45,7 +49,11 @@ class GeneratorThread extends Thread {
 			newC.takeRandomStep(maxX, maxY);
 		} while (!world.hasPixel(newC));
 		
-		System.out.println("Thread " + threadName + " placed " + world.getPixelCount());
-		world.place(c);
+		placeLock.lock();
+		if (world.getPixelCount() < maxPixelCount) { //Another thread may have a placed a pixel since we started looking, ensure we still can place on
+			world.place(c);
+			System.out.println("Thread " + threadName + " placed " + world.getPixelCount());
+		}
+		placeLock.unlock();
 	}
 }
