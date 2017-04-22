@@ -10,6 +10,11 @@ class GeneratorThread extends Thread {
 	final private String threadName; //Mainly for debugging
 	final private ReentrantLock placeLock; //This lock is used to ensure a single thread at a time places a pixel
 	
+	//These belong to the world, but query them once for speed
+	//World is final, and these can't change once world is initialized
+	final int maxX;
+	final int maxY;
+	
 	public GeneratorThread(String threadName, World world, int maxPixelCount, ReentrantLock placeLock) {
 		this.threadName = threadName;
 		this.world = world;
@@ -17,6 +22,9 @@ class GeneratorThread extends Thread {
 		this.placeLock = placeLock;
 
 		this.randomGen = new Random();
+
+		maxX = world.getXSize();
+		maxY = world.getYSize();
 	}
 	
 	@Override
@@ -26,20 +34,38 @@ class GeneratorThread extends Thread {
 			placePixel();
 		}		
 	}
-
-	private void placePixel() {
-		final int maxX = world.getXSize();
-		final int maxY = world.getYSize();
-		
-		//Find an empty spot to start on
-		Coordinate c = new Coordinate(0, 0);
-		c.setRandom(randomGen);
+	
+	private void getInitialPosition(Coordinate c) {
 		do {
 			c.randomize(maxX, maxY);
 		} while (world.hasPixel(c));
 		
-		//Now randomly jiggle our pixel around until it hits another one
-		//Once it hits a second pixel, the position it had before the hit is taken
+		placeLock.lock();
+		if (world.hasPixel(c)) { //Was placed by another thread while we were looping
+			getInitialPosition(c); //Retry
+		}
+		placeLock.unlock();
+	}
+	
+	private void placePixel() {
+		//Find an empty spot to start on
+		Coordinate c = new Coordinate(0, 0);
+		c.setRandom(randomGen);
+		
+		getInitialPosition(c);
+		randomWalkPixel(c);
+		
+		placeLock.lock();
+		if (world.getPixelCount() < maxPixelCount && !world.hasPixel(c)) { //Another thread may have a placed a pixel since we started looking, ensure we still can place one
+			world.place(c);
+			System.out.println("Thread " + threadName + " placed " + world.getPixelCount());
+		}
+		placeLock.unlock();
+	}
+	
+	//Now randomly jiggle our pixel around until it hits another one
+	//Once it hits a second pixel, the position it had before the hit is taken
+	private void randomWalkPixel(Coordinate c) {
 		Coordinate newC = new Coordinate(c.x, c.y);
 		newC.setRandom(randomGen);
 		do { 
@@ -48,12 +74,5 @@ class GeneratorThread extends Thread {
 			
 			newC.takeRandomStep(maxX, maxY);
 		} while (!world.hasPixel(newC));
-		
-		placeLock.lock();
-		if (world.getPixelCount() < maxPixelCount) { //Another thread may have a placed a pixel since we started looking, ensure we still can place on
-			world.place(c);
-			System.out.println("Thread " + threadName + " placed " + world.getPixelCount());
-		}
-		placeLock.unlock();
 	}
 }

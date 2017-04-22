@@ -30,6 +30,20 @@ public class World {
 		return placedPoints.containsKey(c);
 	}
 	
+	public boolean hasPixelWithinCircle(Coordinate toCheck, double radius) {
+		for (Coordinate placed: placedPoints.keySet()) {
+			double distance = distanceBetweenCoordinates(toCheck, placed);
+			if (distance <= radius) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private double distanceBetweenCoordinates(Coordinate c1, Coordinate c2) {
+		return Math.sqrt(Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2));
+	}
+	
 	//Returns 0 if the pixel isn't in the HashMap
 	public int getPixelValue(Coordinate coordinate) {
 		if (placedPoints.containsKey(coordinate)) {
