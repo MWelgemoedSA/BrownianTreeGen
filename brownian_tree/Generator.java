@@ -1,7 +1,5 @@
 package brownian_tree;
 
-import java.util.Random;
-
 public class Generator {
 	public static void main(String... args) {
 		final int argCount = args.length;
@@ -33,7 +31,7 @@ public class Generator {
 	private final World world;
 	private final String outputName = "out.png";
 	
-	Generator(int xsize, int ysize) {
+	private Generator(int xsize, int ysize) {
 		world = new World(xsize, ysize);
 	}
 	
