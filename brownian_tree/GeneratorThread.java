@@ -53,7 +53,7 @@ class GeneratorThread extends Thread {
 		c.setRandom(randomGen);
 		
 		getInitialPosition(c);
-		randomWalkPixel(c);
+		teleportWalkPixel(c);
 		
 		placeLock.lock();
 		if (world.getPixelCount() < maxPixelCount && !world.hasPixel(c)) { //Another thread may have a placed a pixel since we started looking, ensure we still can place one
@@ -74,5 +74,30 @@ class GeneratorThread extends Thread {
 			
 			newC.takeRandomStep(maxX, maxY);
 		} while (!world.hasPixel(newC));
+	}
+	
+	//The motion of the pixel averages to a perfect circle
+	//Taking the a random point on the edge of a circle is identical to random walking until it hits the edge of the circle
+	//The circle must not contain any points otherwise this assumption is not correct
+	//This repeats teleportation until it hits something
+	//If it is right next to another pixel it takes a random step instead of teleporting
+	private void teleportWalkPixel(Coordinate c) {
+		Coordinate newC = new Coordinate(c.x, c.y);
+		newC.setRandom(randomGen);
+		do { 
+			c.x = newC.x;
+			c.y = newC.y;
+			
+			double distance  = world.getDistanceToNearestPixel(c);
+			if (distance > (maxX + maxY)*3) { //Too far, kill the pixel and restart
+				getInitialPosition(newC);
+			} else if (distance > 2) {
+				newC.teleportToCircleEdge(distance-2);
+			} else {
+				newC.takeRandomStep(maxX, maxY);
+			}
+		} while (!world.hasPixel(newC));
+		
+		return;
 	}
 }

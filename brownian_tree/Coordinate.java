@@ -35,7 +35,12 @@ public class Coordinate {
 	public int hashCode() {
 		return x * 1000 + y;
 	}
-
+	
+	@Override
+	public String toString() {
+		return "(" + x + ", " + y + ")";
+	}
+	
 	public void takeRandomStep(int maxX, int maxY) {
 		//Calculate the step to take
 		int xstep = 0;
@@ -55,6 +60,17 @@ public class Coordinate {
 	public void randomize(int maxX, int maxY) {
 		this.x = randomGen.nextInt(maxX);
 		this.y = randomGen.nextInt(maxY);
+	}
+	
+	public void teleportToCircleEdge(double radius) {
+		double angle = randomGen.nextDouble() * Math.PI * 2; //Random 360 degree angle in radians
+		//System.out.println("Teleporting to circle edge from " + this + " radius " + radius + " angle " + angle);
+		double xStep = Math.cos(angle) * radius;
+		double yStep = Math.sin(angle) * radius;
+		
+		this.x += xStep;
+		this.y += yStep;
+		//System.out.println("New position " + xStep + " " + yStep + " " + this);
 	}
 	
 	private void wrapAround(int maxX, int maxY) {

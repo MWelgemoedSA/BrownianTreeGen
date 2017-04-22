@@ -30,14 +30,36 @@ public class World {
 		return placedPoints.containsKey(c);
 	}
 	
+	//TODO
+	//Our world is torriodal, pixels can wrap around the edges as they move
+	//This function does not consider that
 	public boolean hasPixelWithinCircle(Coordinate toCheck, double radius) {
+		System.out.println("Checking " + toCheck + " " + radius);
+
 		for (Coordinate placed: placedPoints.keySet()) {
 			double distance = distanceBetweenCoordinates(toCheck, placed);
-			if (distance <= radius) {
+			if (distance - radius < 1) {
+				System.out.println("Collision " + placed + " " + distance + " <= " + radius);
 				return true;
+			} else {
+				System.out.println("No collision " + placed + " " + distance + " > " + radius);
 			}
 		}
+		
+		System.out.println("No collisions found");
 		return false;
+	}
+	
+	public double getDistanceToNearestPixel(Coordinate toCheck) {
+		assert this.getPixelCount() > 0;
+		
+		double distance = Double.MAX_VALUE;
+		for (Coordinate placed: placedPoints.keySet()) {
+			double distanceToThisPixel = distanceBetweenCoordinates(toCheck, placed);
+			//System.out.println("Distance from " + toCheck + " " + placed + " " + distanceToThisPixel);
+			distance = Math.min(distance, distanceToThisPixel);
+		}
+		return distance;
 	}
 	
 	private double distanceBetweenCoordinates(Coordinate c1, Coordinate c2) {
@@ -80,7 +102,7 @@ public class World {
 		}
 		System.out.print("\n\n\n");
 	}
-
+	
 	public void saveToFile(String filename) {
 		int biggestValue = 0;
 		for (Integer value : placedPoints.values()) {
