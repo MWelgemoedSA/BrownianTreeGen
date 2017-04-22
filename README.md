@@ -2,7 +2,9 @@
 
 A generator for brownian trees.
 
-It's a super simple java exercise, although I later plan to try and do complicated optimizations and exporting to an image.
+It's a super simple java exercise, although I later plan to try and do complicated optimizations.
+
+It supports multithreading, which gives a linear speed increase.
 
 Example of a Brownian Tree generated with it:
 
