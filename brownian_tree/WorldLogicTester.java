@@ -50,12 +50,30 @@ public class WorldLogicTester {
 		c = new Coordinate(500, 500);
 		assert world.getDistanceToNearestPixel(c) == 0;
 		
+		//Check that the circle jumps are directionally indepenent
+		c = new Coordinate();
+		Random randomGen = new Random();
+		c.setRandom(randomGen);
+		
+		double xTotal = 0;
+		double yTotal = 0;
+		double rngTest = 0;
+		for (long i = 0; i != 100_000_000; i++) {
+			c.x = 0;
+			c.y = 0;
+			c.teleportToCircleEdge(100);
+			xTotal += c.x;
+			yTotal += c.y;
+			rngTest += randomGen.nextDouble() - 0.5;
+		}
+		System.out.println(xTotal + " " + yTotal + " " + rngTest);
+		
 		//Nondeterminate test, but better than nothing
-		for(int i = 0; i != 1000_000; i++) {
+		for(int i = 0; i != 1_000_000; i++) {
 			c = new Coordinate();
 			c.setRandom(new Random());
 			double distance = 100;
-			while (distance > 2 && distance < 2000) {
+			while (distance > 3 && distance < 2000) {
 				distance  = world.getDistanceToNearestPixel(c);
 				c.teleportToCircleEdge(distance-2);
 				distance = world.getDistanceToNearestPixel(c);

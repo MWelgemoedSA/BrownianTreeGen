@@ -68,8 +68,8 @@ public class Coordinate {
 		double xStep = Math.cos(angle) * radius;
 		double yStep = Math.sin(angle) * radius;
 		
-		this.x += xStep;
-		this.y += yStep;
+		this.x += Math.round(xStep);
+		this.y += Math.round(yStep);
 		//System.out.println("New position " + xStep + " " + yStep + " " + this);
 	}
 	
