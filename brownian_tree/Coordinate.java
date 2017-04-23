@@ -1,8 +1,9 @@
 package brownian_tree;
 
+import datastructure.XYHolder;
 import java.util.Random;
 
-public class Coordinate {
+public class Coordinate implements XYHolder{
 	public int x;
 	public int y;
 	private Random randomGen;
@@ -19,6 +20,16 @@ public class Coordinate {
 	
 	public void setRandom(Random randomGen) {
 		this.randomGen = randomGen;
+	}
+	
+	@Override
+	public long getX() {
+		return x;
+	}
+	
+	@Override
+	public long getY() {
+		return y;
 	}
 	
 	@Override

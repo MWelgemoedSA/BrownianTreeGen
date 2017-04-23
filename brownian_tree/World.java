@@ -5,9 +5,13 @@ import java.io.File;
 import java.io.IOException;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+import datastructure.KDTree;
+import datastructure.XYHolder;
 
 public class World {
 	ConcurrentHashMap<Coordinate, Integer> placedPoints;
+	KDTree placedPointsTree; //Used for nearest neighbour search
+	
 	private final int xSize;
 	private final int ySize;
 	private final boolean useColouredPixels = true;
@@ -17,6 +21,7 @@ public class World {
 		this.ySize = ySize;
 
 		placedPoints = new ConcurrentHashMap<>();
+		placedPointsTree = new KDTree();
 	}
 
 	public void placeCenterPixel() {
@@ -53,17 +58,13 @@ public class World {
 	public double getDistanceToNearestPixel(Coordinate toCheck) {
 		assert this.getPixelCount() > 0;
 		
-		double distance = Double.MAX_VALUE;
-		for (Coordinate placed: placedPoints.keySet()) {
-			double distanceToThisPixel = distanceBetweenCoordinates(toCheck, placed);
-			//System.out.println("Distance from " + toCheck + " " + placed + " " + distanceToThisPixel);
-			distance = Math.min(distance, distanceToThisPixel);
-		}
-		return distance;
+		XYHolder nearestPoint = placedPointsTree.nearestNeighbour(toCheck);
+		
+		return distanceBetweenCoordinates(toCheck, nearestPoint);
 	}
 	
-	private double distanceBetweenCoordinates(Coordinate c1, Coordinate c2) {
-		return Math.sqrt(Math.pow(c1.x - c2.x, 2) + Math.pow(c1.y - c2.y, 2));
+	private double distanceBetweenCoordinates(XYHolder c1, XYHolder c2) {
+		return Math.sqrt(Math.pow(c1.getX() - c2.getX(), 2) + Math.pow(c1.getY() - c2.getY(), 2));
 	}
 	
 	//Returns 0 if the pixel isn't in the HashMap
@@ -89,6 +90,7 @@ public class World {
 	
 	public void place(Coordinate c, int val) {
 		placedPoints.put(c, val);
+		placedPointsTree.insert(c);
 	}
 	
 	public void print() {
