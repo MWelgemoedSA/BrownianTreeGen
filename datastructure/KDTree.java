@@ -1,17 +1,31 @@
 package datastructure;
 
 import java.util.AbstractList;
+import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.ArrayList;
 
 public class KDTree {
     private  KDNode root = null;
     private long count;
-    ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     public KDTree() {
             count = 0;
         }
 
+    public KDTree(AbstractList<XYHolder> xyList) {
+        root = new KDNode(xyList, 0);
+    }
+    
+    public void rebalance() {
+	    readWriteLock.writeLock().lock();
+	    ArrayList<XYHolder> allPoints = new ArrayList<>();
+	    getAllPoints(allPoints);
+	    root = new KDNode(allPoints, 0);
+	     readWriteLock.writeLock().unlock();
+	}
+    
     public void insert(XYHolder xy) {
 	readWriteLock.writeLock().lock();
         if (root == null) {
@@ -136,6 +150,26 @@ class KDNode {
     KDNode(XYHolder pointAtNode, int depth) {
         this.pointAtNode = pointAtNode;
         this.depth = depth;
+    }
+    
+    public KDNode(AbstractList<XYHolder> xylist, int depth) {
+        this.depth = depth;
+
+        xylist.sort((p1, p2) -> Long.compare(this.getSplitValueOf(p1), this.getSplitValueOf(p2)));
+
+        int median = xylist.size() / 2;
+        //System.out.println("Median " + median + " " + xylist);
+        this.pointAtNode = xylist.get(median);
+
+        AbstractList<XYHolder> leftPoints = new ArrayList<>(xylist.subList(0, median));
+        if (!leftPoints.isEmpty()) {
+            this.left = new KDNode(leftPoints, depth+1);
+        }
+
+        AbstractList<XYHolder> rightPoints = new ArrayList<>(xylist.subList(median+1, xylist.size()));
+        if (!rightPoints.isEmpty()) {
+            this.right = new KDNode(rightPoints, depth+1);
+        }
     }
 
     XYHolder getXYObject() {

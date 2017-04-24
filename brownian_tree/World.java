@@ -91,6 +91,12 @@ public class World {
 	public void place(Coordinate c, int val) {
 		placedPoints.put(c, val);
 		placedPointsTree.insert(c);
+		
+		//if (getPixelCount() % 10_000 == 0) {
+		//	long start = System.currentTimeMillis();
+		//	placedPointsTree.rebalance();
+		//	System.out.println("Tree rebalance finished in " + (System.currentTimeMillis()-start) + "ms");
+		//}
 	}
 	
 	public void print() {

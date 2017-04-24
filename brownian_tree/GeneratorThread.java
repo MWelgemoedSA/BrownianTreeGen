@@ -58,7 +58,9 @@ class GeneratorThread extends Thread {
 		placeLock.lock();
 		if (world.getPixelCount() < maxPixelCount && !world.hasPixel(c)) { //Another thread may have a placed a pixel since we started looking, ensure we still can place one
 			world.place(c);
-			System.out.println("Thread " + threadName + " placed " + world.getPixelCount());
+			if (world.getPixelCount() % 1000 == 0) {
+				System.out.println("Thread " + threadName + " placed " + world.getPixelCount());
+			}
 		}
 		placeLock.unlock();
 	}
