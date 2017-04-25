@@ -8,6 +8,16 @@ public class Coordinate implements XYHolder{
 	public int y;
 	private Random randomGen;
 	
+	//Mainly for debugging, but also interesting to know
+	private final long creationTime = System.currentTimeMillis();
+	private long placedTime; //Value of currentTimeMillis()
+	private long teleportCount = 0;
+	private long randomStepCount = 0;
+	private String findingThread;
+
+	//Used to colour the png pixel
+	private int pixelNumber = -1;
+
 	public Coordinate() {
 		x = 0;
 		y = 0;
@@ -16,6 +26,16 @@ public class Coordinate implements XYHolder{
 	public Coordinate(int x, int y) {
 		this.x = x;
 		this.y = y;
+	}
+	
+	public void fillExtraFields(int pixelNumber, String findingThread) {
+		this.placedTime = System.currentTimeMillis();
+		this.pixelNumber = pixelNumber;
+		this.findingThread = findingThread;
+	}
+	
+	public int getPixelNumber() {
+		return pixelNumber;
 	}
 	
 	public void setRandom(Random randomGen) {
