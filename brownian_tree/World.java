@@ -23,7 +23,9 @@ public class World {
 	}
 
 	public void placeCenterPixel() {
-		place(xSize/2, ySize/2);
+		Coordinate c = new Coordinate(xSize/2, ySize/2);
+		c.fillExtraFields(0, "Init");
+		place(c);
 	}
 
 	public int getXSize() {return xSize;}
@@ -53,12 +55,6 @@ public class World {
 		return size;
 	}
 	
-	public void place(int x, int y) {
-		Coordinate c = new Coordinate(x, y);
-		c.fillExtraFields(0, "Init");
-		place(c);
-	}
-
 	public void place(Coordinate c) {
 		placedPointsTree.insert(c);
 		//if (getPixelCount() % 10_000 == 0) {

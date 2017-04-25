@@ -12,13 +12,13 @@ public class WorldLogicTester {
 		world.placeCenterPixel();
 		assert world.getPixelCount() == 1;
 	
-		world.place(100, 100);
+		world.place(new Coordinate(100, 100));
 		assert world.getPixelCount() == 2;
 		
 		//Now test the circle optimizations
 		world = new World(1000, 1000);
 		world.placeCenterPixel();
-		world.place(900, 900);
+		world.place(new Coordinate(900, 900));
 		
 		Coordinate c = new Coordinate(400, 400);
 		/*assert world.hasPixelWithinCircle(c, 200);
@@ -33,14 +33,14 @@ public class WorldLogicTester {
 		c.x = 400;
 		assert (int)world.getDistanceToNearestPixel(c) == 141;
 		
-		world.place(500, 400);
+		world.place(new Coordinate(500, 400));
 		c.x = 500;
 		c.y = 450;
 		assert world.getDistanceToNearestPixel(c) == 50;
 		
 		//Edge tests
 		world = new World(1000, 1000);
-		world.place(500, 500);
+		world.place(new Coordinate(500, 500));
 		c = new Coordinate(499, 499);
 		assert (int)world.getDistanceToNearestPixel(c) == 1;
 		c = new Coordinate(501, 501);
