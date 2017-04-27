@@ -100,11 +100,6 @@ public class KDTree {
         return closestNode.getXYObject();
     }
 
-    private class FindResult {
-        double distance = Double.MAX_VALUE;
-        KDNode node = null;
-    }
-
     private FindResult nearestNeighbour(KDNode nodeToSearch, XYHolder xyToFind, FindResult bestSoFar) {
         if (nodeToSearch == null) return bestSoFar;
 
@@ -133,6 +128,11 @@ public class KDTree {
 
         return bestSoFar;
     }
+
+    private class FindResult {
+        double distance = Double.MAX_VALUE;
+        KDNode node = null;
+    }
 }
 
 class KDNode {
@@ -140,14 +140,6 @@ class KDNode {
     private XYHolder pointAtNode;
     private KDNode left;
     private KDNode right;
-
-    @Override
-    public String toString() {
-        return "KDNode{" +
-                "depth=" + depth +
-                ", pointAtNode=" + pointAtNode +
-                '}';
-    }
 
     KDNode(XYHolder pointAtNode, int depth) {
         this.pointAtNode = pointAtNode;
@@ -172,6 +164,14 @@ class KDNode {
         if (!rightPoints.isEmpty()) {
             this.right = new KDNode(rightPoints, depth + 1);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "KDNode{" +
+                "depth=" + depth +
+                ", pointAtNode=" + pointAtNode +
+                '}';
     }
 
     XYHolder getXYObject() {

@@ -22,30 +22,6 @@ public class Generator {
         world = World.createFromFile(fileToLoad);
     }
 
-    private void run(int totalPixels) {
-        try {
-            world.setExportFileName(imageFileName, pointsFileName);
-            world.setTargetPixelCount(totalPixels);
-            world.placeCenterPixel();
-
-            ReentrantLock placeLock = new ReentrantLock();
-            Thread[] threadList = new Thread[threadCount];
-            for (int i = 0; i != threadCount; i++) {
-                threadList[i] = new GeneratorThread("Thread-" + (i + 1), world, totalPixels, placeLock);
-                threadList[i].start();
-            }
-
-            for (int i = 0; i != threadCount; i++) {
-                threadList[i].join();
-            }
-
-            //Save with the the file names given
-            world.saveToFiles();
-        } catch (InterruptedException e) {
-            System.err.println("Error, threads interrupted");
-        }
-    }
-
     public static void main(String... args) {
         final int argCount = args.length;
 
@@ -117,5 +93,29 @@ public class Generator {
             instance = new Generator(fileToLoad, threadCount, imageFileName, pointsFileName);
         }
         instance.run(pixelCount);
+    }
+
+    private void run(int totalPixels) {
+        try {
+            world.setExportFileName(imageFileName, pointsFileName);
+            world.setTargetPixelCount(totalPixels);
+            world.placeCenterPixel();
+
+            ReentrantLock placeLock = new ReentrantLock();
+            Thread[] threadList = new Thread[threadCount];
+            for (int i = 0; i != threadCount; i++) {
+                threadList[i] = new GeneratorThread("Thread-" + (i + 1), world, totalPixels, placeLock);
+                threadList[i].start();
+            }
+
+            for (int i = 0; i != threadCount; i++) {
+                threadList[i].join();
+            }
+
+            //Save with the the file names given
+            world.saveToFiles();
+        } catch (InterruptedException e) {
+            System.err.println("Error, threads interrupted");
+        }
     }
 }
