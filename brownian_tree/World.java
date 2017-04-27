@@ -1,12 +1,11 @@
 package brownian_tree;
 
-import java.io.*;
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-
 import datastructure.KDTree;
 import datastructure.XYHolder;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
 
 public class World {

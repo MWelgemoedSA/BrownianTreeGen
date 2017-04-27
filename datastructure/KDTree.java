@@ -1,10 +1,10 @@
 package datastructure;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.ArrayList;
 
 public class KDTree {
     private KDNode root = null;

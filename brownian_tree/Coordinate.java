@@ -1,6 +1,7 @@
 package brownian_tree;
 
 import datastructure.XYHolder;
+
 import java.util.Random;
 
 public class Coordinate implements XYHolder{
