@@ -119,12 +119,12 @@ public class World {
     }
 
     void saveToFiles(String imageFileName, String pointFileName) {
-		BufferedImage image = new BufferedImage(xSize, ySize, BufferedImage.TYPE_INT_RGB);
-		
-		ArrayList<XYHolder> pointList = new ArrayList<>();
-		placedPointsTree.getAllPoints(pointList);
-		
-		//Background
+        BufferedImage image = new BufferedImage(xSize, ySize, BufferedImage.TYPE_INT_RGB);
+
+        ArrayList<XYHolder> pointList = new ArrayList<>();
+        placedPointsTree.getAllPoints(pointList);
+
+        //Background
 		for (int x = 0; x < xSize; x++) {
 			for (int y = 0; y < ySize; y++) {
 		        	image.setRGB(x, y, 0xffffff); //White

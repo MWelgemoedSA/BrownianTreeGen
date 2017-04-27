@@ -11,7 +11,7 @@ public class Generator {
 	private Generator(int xsize, int ysize, int threadCount, String imageFileName, String pointsFileName) {
 		this.threadCount = threadCount;
 		this.imageFileName = imageFileName;
-		this.pointsFileName = pointsFileName;
+        this.pointsFileName = pointsFileName;
 		world = new World(xsize, ysize);
 	}
 

@@ -66,7 +66,7 @@ class GeneratorThread extends Thread {
 				System.out.println("Thread " + threadName + " placed " + world.getPixelCount());
 			}
 
-			if (pixelCount % 10_000 == 0) {
+            if (pixelCount % 10_000 == 0) {
                 world.saveToIntermediateFiles();
             }
 		}

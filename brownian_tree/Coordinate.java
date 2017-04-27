@@ -71,7 +71,7 @@ public class Coordinate implements XYHolder{
 	}
 	
 	@Override
-	public long getY() {
+    public long getY() {
 		return y;
 	}
 	
