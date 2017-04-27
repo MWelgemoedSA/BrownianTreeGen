@@ -1,43 +1,88 @@
 package brownian_tree;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import datastructure.KDTree;
 import datastructure.XYHolder;
+
 import java.util.ArrayList;
 
-public class World {	
+public class World {
 	private final int xSize;
 	private final int ySize;
-	private final boolean useColouredPixels = true;
+	private final KDTree placedPointsTree; //Contains points, used for efficient nearest neighbour search
 
-	private final KDTree placedPointsTree; //Used for nearest neighbour search
+    private String imageFileName = null;
+    private String pointFileName = null;
+    private int targetPixelCount = 0; //If given, used for the colouring
 
-	public World(int xSize, int ySize) {
+	public World(int xSize, int ySize, KDTree treeToUse) {
 		this.xSize = xSize;
 		this.ySize = ySize;
-
-		placedPointsTree = new KDTree();
+		this.placedPointsTree = treeToUse;
 	}
 
-	public void placeCenterPixel() {
+    public World(int xsize, int ysize) {
+	    this.xSize = xsize;
+	    this.ySize = ysize;
+	    this.placedPointsTree = new KDTree();
+    }
+
+    static World createFromFile(String fileToLoad) {
+	    assert fileToLoad != null;
+
+	    int xSize = 0;
+	    int ySize = 0;
+	    KDTree placedPointsTree = null;
+
+        try {
+            try (
+                    BufferedReader reader = new BufferedReader(
+                            new FileReader(fileToLoad))
+            ) {
+                String firstLine = reader.readLine();
+                if (firstLine == null) {
+                    System.err.println("File " + fileToLoad + " is blank");
+                    System.exit(1);
+                }
+
+                String[] stringParts = firstLine.split(";");
+                xSize = Integer.parseInt(stringParts[0]);
+                ySize = Integer.parseInt(stringParts[1]);
+
+                String pointLine;
+                ArrayList<XYHolder> pointList = new ArrayList<>();
+                while ((pointLine = reader.readLine()) != null)
+                    pointList.add(new Coordinate(pointLine));
+
+                placedPointsTree = new KDTree(pointList);
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("Unable to find file " + fileToLoad);
+            System.exit(1);
+        } catch (IOException e) {
+            System.err.println("Unable to read file " + fileToLoad);
+            System.exit(1);
+        }
+
+        return new World(xSize, ySize, placedPointsTree);
+    }
+
+    void placeCenterPixel() {
 		Coordinate c = new Coordinate(xSize/2, ySize/2);
 		c.fillExtraFields(0, "Init");
 		place(c);
 	}
 
-	public int getXSize() {return xSize;}
-	public int getYSize() {return ySize;}
+	int getXSize() {return xSize;}
+	int getYSize() {return ySize;}
 
-	public boolean hasPixel(Coordinate c) {
-		boolean hasPixel = placedPointsTree.contains(c);
-		//assert hasPixel == placedPoints.containsKey(c);
-		return hasPixel;
+	boolean hasPixel(Coordinate c) {
+		return placedPointsTree.contains(c);
 	}
 		
-	public double getDistanceToNearestPixel(Coordinate toCheck) {
+	double getDistanceToNearestPixel(Coordinate toCheck) {
 		assert this.getPixelCount() > 0;
 		
 		XYHolder nearestPoint = placedPointsTree.nearestNeighbour(toCheck);
@@ -49,13 +94,11 @@ public class World {
 		return Math.sqrt(Math.pow(c1.getX() - c2.getX(), 2) + Math.pow(c1.getY() - c2.getY(), 2));
 	}
 	
-	public int getPixelCount() {
-		int size = (int)placedPointsTree.size();
-		//assert size == placedPoints.size();
-		return size;
+	int getPixelCount() {
+		return placedPointsTree.size();
 	}
 	
-	public void place(Coordinate c) {
+	void place(Coordinate c) {
 		placedPointsTree.insert(c);
 		//if (getPixelCount() % 10_000 == 0) {
 		//	long start = System.currentTimeMillis();
@@ -63,8 +106,19 @@ public class World {
 		//	System.out.println("Tree rebalance finished in " + (System.currentTimeMillis()-start) + "ms");
 		//}
 	}
-	
-	public void saveToFile(String filename) {
+
+    void saveToFiles() {
+        this.saveToFiles(this.imageFileName, this.pointFileName);
+    }
+
+    void saveToIntermediateFiles() {
+        String count = String.format("%010d", getPixelCount());
+
+        String prefix = "pixels-" + count + "-";
+        saveToFiles(prefix + imageFileName, prefix + pointFileName);
+    }
+
+    void saveToFiles(String imageFileName, String pointFileName) {
 		BufferedImage image = new BufferedImage(xSize, ySize, BufferedImage.TYPE_INT_RGB);
 		
 		ArrayList<XYHolder> pointList = new ArrayList<>();
@@ -77,24 +131,48 @@ public class World {
 			}
 		}
 
+        try {
+            FileWriter pointWriter = new FileWriter(pointFileName);
+            pointWriter.write(xSize + ";" + ySize + "\n");
+            for (XYHolder xy : pointList) {
+                pointWriter.write(xy.toString());
+                pointWriter.write("\n");
+            }
+            pointWriter.close();
+        } catch (IOException e) {
+            System.err.println("Error outputting points: " + pointFileName);
+        }
+
 		//Draw the tree
-		int maxPixelValue = (int)placedPointsTree.size();
+		int maxPixelValue = targetPixelCount;
+		if (maxPixelValue == 0) {
+            maxPixelValue = placedPointsTree.size();
+        }
+
 		int factorForRGB = (int)Math.pow(2, 24) / maxPixelValue; //RGB as a 24 bit int is spread out evenly across the pixels, which creates a nice wavy pattern from dark to light
 		for (XYHolder xy : pointList) {
 			Coordinate c = (Coordinate)xy;
-			int rgb = 0;
-			if (useColouredPixels) {
-				rgb = c.getPixelNumber() * factorForRGB;
-			}			
+			int rgb = c.getPixelNumber() * factorForRGB;
+
 			image.setRGB((int)c.getX(), (int)c.getY(), rgb);
 		}
-		
-		File outputFile = new File(filename);
+
+		File imageOutputFile = new File(imageFileName);
 		try {
-			ImageIO.write(image, "png", outputFile);
+			ImageIO.write(image, "png", imageOutputFile);
 		} catch (IOException e) {
-			System.err.println("Error writing image: " + outputFile);
+			System.err.println("Error outputting image: " + imageOutputFile);
 		}
 	}
-}
 
+    public void setExportFileName(String imageFileName, String pointFileName) {
+	    assert imageFileName != null;
+	    assert pointFileName != null;
+	    this.imageFileName = imageFileName;
+	    this.pointFileName = pointFileName;
+    }
+
+    public void setTargetPixelCount(int targetPixelCount) {
+        this.targetPixelCount = targetPixelCount;
+    }
+}

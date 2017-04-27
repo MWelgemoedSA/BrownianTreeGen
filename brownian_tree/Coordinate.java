@@ -4,15 +4,17 @@ import datastructure.XYHolder;
 import java.util.Random;
 
 public class Coordinate implements XYHolder{
-	public int x;
-	public int y;
+	int x; //x and y are explictly package private for speed
+	int y;
 	private Random randomGen;
 	
 	//Mainly for debugging, but also interesting to know
-	private final long creationTime = System.currentTimeMillis();
+	private long creationTime = System.currentTimeMillis();
 	private long placedTime; //Value of currentTimeMillis()
-	private long teleportCount = 0;
-	private long randomStepCount = 0;
+	private int teleportCount = 0;
+	private int randomStepCount = 0;
+	private int timesReset = 0;
+
 	private String findingThread;
 
 	//Used to colour the png pixel
@@ -27,18 +29,39 @@ public class Coordinate implements XYHolder{
 		this.x = x;
 		this.y = y;
 	}
-	
-	public void fillExtraFields(int pixelNumber, String findingThread) {
+
+    public Coordinate(String pointLine) {
+        String[] parts = pointLine.split(";");
+        assert parts.length == 8;
+
+        this.x = Integer.parseInt(parts[0]);
+        this.y = Integer.parseInt(parts[1]);
+        this.pixelNumber = Integer.parseInt(parts[2]);
+        this.creationTime = Long.parseLong(parts[3]);
+        this.placedTime = Long.parseLong(parts[4]);
+        this.timesReset = Integer.parseInt(parts[5]);
+        this.teleportCount = Integer.parseInt(parts[6]);
+        this.randomStepCount = Integer.parseInt(parts[7]);
+        this.findingThread = parts[7];
+    }
+
+    void resetCounts() {
+		this.teleportCount = 0;
+		this.randomStepCount = 0;
+		this.timesReset++;
+	}
+
+	void fillExtraFields(int pixelNumber, String findingThread) {
 		this.placedTime = System.currentTimeMillis();
 		this.pixelNumber = pixelNumber;
 		this.findingThread = findingThread;
 	}
 	
-	public int getPixelNumber() {
+	int getPixelNumber() {
 		return pixelNumber;
 	}
 	
-	public void setRandom(Random randomGen) {
+	void setRandom(Random randomGen) {
 		this.randomGen = randomGen;
 	}
 	
@@ -69,10 +92,21 @@ public class Coordinate implements XYHolder{
 	
 	@Override
 	public String toString() {
-		return "(" + x + ", " + y + ")";
-	}
-	
-	public void takeRandomStep(int maxX, int maxY) {
+        return 
+                x + ";" +
+                y + ";" +
+                pixelNumber + ";" +
+                creationTime + ";" +
+                placedTime + ";" +
+                timesReset + ";" +
+                teleportCount + ";" +
+                randomStepCount + ";" +
+                findingThread;
+    }
+
+	void takeRandomStep(int maxX, int maxY) {
+	    this.randomStepCount++;
+
 		//Calculate the step to take
 		int xstep = 0;
 		int ystep = 0;
@@ -85,15 +119,14 @@ public class Coordinate implements XYHolder{
 		this.y += ystep;
 		
 		this.wrapAround(maxX, maxY); //Wrap around the edge of the world
-
 	}
 	
-	public void randomize(int maxX, int maxY) {
+	void randomize(int maxX, int maxY) {
 		this.x = randomGen.nextInt(maxX);
 		this.y = randomGen.nextInt(maxY);
 	}
 	
-	public void teleportToCircleEdge(double radius) {
+	void teleportToCircleEdge(double radius) {
 		double angle = randomGen.nextDouble() * Math.PI * 2; //Random 360 degree angle in radians
 		//System.out.println("Teleporting to circle edge from " + this + " radius " + radius + " angle " + angle);
 		double xStep = Math.cos(angle) * radius;
@@ -101,6 +134,8 @@ public class Coordinate implements XYHolder{
 		
 		this.x += Math.round(xStep);
 		this.y += Math.round(yStep);
+
+		this.teleportCount++;
 		//System.out.println("New position " + xStep + " " + yStep + " " + this);
 	}
 	
@@ -117,4 +152,10 @@ public class Coordinate implements XYHolder{
 			y -= maxY;
 		}
 	}
+
+    void setCounts(Coordinate counterSource) {
+	    this.timesReset = counterSource.timesReset;
+	    this.teleportCount = counterSource.teleportCount;
+	    this.randomStepCount = counterSource.randomStepCount;
+    }
 }

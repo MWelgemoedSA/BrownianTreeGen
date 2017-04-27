@@ -1,13 +1,14 @@
 package datastructure;
 
 import java.util.AbstractList;
+import java.util.Comparator;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.ArrayList;
 
 public class KDTree {
     private  KDNode root = null;
-    private long count;
+    private int count;
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     public KDTree() {
@@ -16,6 +17,7 @@ public class KDTree {
 
     public KDTree(AbstractList<XYHolder> xyList) {
         root = new KDNode(xyList, 0);
+        count = xyList.size();
     }
     
     public void rebalance() {
@@ -51,14 +53,14 @@ public class KDTree {
         return findNodeFor(subNode, xyToFind);
     }
 
-    public long size() {
+    public int size() {
         return count;
     }
 
     public void getAllPoints(AbstractList<XYHolder> list) {
-	readWriteLock.readLock().lock();
+	    readWriteLock.readLock().lock();
         getAllPoints(root, list);
-	readWriteLock.readLock().unlock();
+	    readWriteLock.readLock().unlock();
     }
 
     private void getAllPoints(KDNode node, AbstractList<XYHolder> list) {
@@ -76,9 +78,9 @@ public class KDTree {
             return false;
         }
 
-	readWriteLock.readLock().lock();
+	    readWriteLock.readLock().lock();
         KDNode closestPointNode = findNodeFor(root, xy);
-	readWriteLock.readLock().unlock();
+	    readWriteLock.readLock().unlock();
         return closestPointNode.pointEqualsPointAtNode(xy);
     }
 
@@ -88,9 +90,9 @@ public class KDTree {
             return null;
         }
 
-	readWriteLock.readLock().lock();
+	    readWriteLock.readLock().lock();
         KDNode closestNode = nearestNeighbour(root, xy, new FindResult()).node;
-	readWriteLock.readLock().unlock();
+	    readWriteLock.readLock().unlock();
 
         if (closestNode == null) return null;
 
@@ -152,10 +154,10 @@ class KDNode {
         this.depth = depth;
     }
     
-    public KDNode(AbstractList<XYHolder> xylist, int depth) {
+    KDNode(AbstractList<XYHolder> xylist, int depth) {
         this.depth = depth;
 
-        xylist.sort((p1, p2) -> Long.compare(this.getSplitValueOf(p1), this.getSplitValueOf(p2)));
+        xylist.sort(Comparator.comparingLong(this::getSplitValueOf));
 
         int median = xylist.size() / 2;
         //System.out.println("Median " + median + " " + xylist);
@@ -184,11 +186,11 @@ class KDNode {
         return right;
     }
 
-    long getX() {
+    private long getX() {
         return pointAtNode.getX();
     }
 
-    long getY() {
+    private long getY() {
         return pointAtNode.getY();
     }
 

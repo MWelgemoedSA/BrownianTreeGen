@@ -10,9 +10,5 @@ Command line arguments are x size, y size, pixels to place, #num threads
 
 Example of a Brownian Tree generated with it:
 
-![Brownian Tree](https://raw.githubusercontent.com/MWelgemoedSA/BrownianTreeGen/master/ReadmeImages/BrownianTree.png)
-
-An example of the motion test output to double-check the RNG:
-
-![Motion test image](https://raw.githubusercontent.com/MWelgemoedSA/BrownianTreeGen/master/ReadmeImages/motionTest.png)
+![Brownian Tree](https://raw.githubusercontent.com/MWelgemoedSA/BrownianTreeGen/master/ReadmeImages/BrownianTree.gif)
 

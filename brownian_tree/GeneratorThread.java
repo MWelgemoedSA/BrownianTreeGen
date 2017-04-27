@@ -12,8 +12,8 @@ class GeneratorThread extends Thread {
 	
 	//These belong to the world, but query them once for speed
 	//World is final, and these can't change once world is initialized
-	final int maxX;
-	final int maxY;
+	private final int maxX;
+	private final int maxY;
 	
 	public GeneratorThread(String threadName, World world, int maxPixelCount, ReentrantLock placeLock) {
 		this.threadName = threadName;
@@ -59,26 +59,20 @@ class GeneratorThread extends Thread {
 		if (world.getPixelCount() < maxPixelCount && !world.hasPixel(c)) { //Another thread may have a placed a pixel since we started looking, ensure we still can place one
 			c.fillExtraFields(world.getPixelCount(), threadName);
 			world.place(c);
-			if (world.getPixelCount() % 1000 == 0) {
+
+			int pixelCount = world.getPixelCount();
+
+            if (pixelCount % 1000 == 0) {
 				System.out.println("Thread " + threadName + " placed " + world.getPixelCount());
 			}
+
+			if (pixelCount % 10_000 == 0) {
+                world.saveToIntermediateFiles();
+            }
 		}
 		placeLock.unlock();
 	}
-	
-	//Now randomly jiggle our pixel around until it hits another one
-	//Once it hits a second pixel, the position it had before the hit is taken
-	private void randomWalkPixel(Coordinate c) {
-		Coordinate newC = new Coordinate(c.x, c.y);
-		newC.setRandom(randomGen);
-		do { 
-			c.x = newC.x;
-			c.y = newC.y;
-			
-			newC.takeRandomStep(maxX, maxY);
-		} while (!world.hasPixel(newC));
-	}
-	
+
 	//The motion of the pixel averages to a perfect circle
 	//Taking the a random point on the edge of a circle is identical to random walking until it hits the edge of the circle
 	//The circle must not contain any points otherwise this assumption is not correct
@@ -95,13 +89,13 @@ class GeneratorThread extends Thread {
 			//System.out.println(newC + " dist " + distance);
 			if (distance > (maxX + maxY)*3) { //Too far, kill the pixel and restart
 				getInitialPosition(newC);
+				newC.resetCounts();
 			} else if (distance > 3) {
 				newC.teleportToCircleEdge(distance-2);
 			} else {
 				newC.takeRandomStep(maxX, maxY);
 			}
 		} while (!world.hasPixel(newC));
-		
-		return;
+		c.setCounts(newC);
 	}
 }
