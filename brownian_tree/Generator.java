@@ -3,17 +3,17 @@ package brownian_tree;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Generator {
-	private final World world;
-	private final String imageFileName;
-	private final String pointsFileName;
-	private final int threadCount;
-	
-	private Generator(int xsize, int ysize, int threadCount, String imageFileName, String pointsFileName) {
-		this.threadCount = threadCount;
-		this.imageFileName = imageFileName;
+    private final World world;
+    private final String imageFileName;
+    private final String pointsFileName;
+    private final int threadCount;
+
+    private Generator(int xsize, int ysize, int threadCount, String imageFileName, String pointsFileName) {
+        this.threadCount = threadCount;
+        this.imageFileName = imageFileName;
         this.pointsFileName = pointsFileName;
-		world = new World(xsize, ysize);
-	}
+        world = new World(xsize, ysize);
+    }
 
     public Generator(String fileToLoad, int threadCount, String imageFileName, String pointsFileName) {
         this.threadCount = threadCount;
@@ -23,28 +23,28 @@ public class Generator {
     }
 
     private void run(int totalPixels) {
-		try {
-		    world.setExportFileName(imageFileName, pointsFileName);
-		    world.setTargetPixelCount(totalPixels);
-			world.placeCenterPixel();
-			
-			ReentrantLock placeLock = new ReentrantLock();
-			Thread[] threadList = new Thread[threadCount];
-			for(int i = 0; i != threadCount; i++) {			
-				threadList[i] = new GeneratorThread("Thread-" + (i+1), world, totalPixels, placeLock);
-				threadList[i].start();
-			}
+        try {
+            world.setExportFileName(imageFileName, pointsFileName);
+            world.setTargetPixelCount(totalPixels);
+            world.placeCenterPixel();
 
-			for(int i = 0; i != threadCount; i++) {			
-				threadList[i].join();
-			}
+            ReentrantLock placeLock = new ReentrantLock();
+            Thread[] threadList = new Thread[threadCount];
+            for(int i = 0; i != threadCount; i++) {
+                threadList[i] = new GeneratorThread("Thread-" + (i+1), world, totalPixels, placeLock);
+                threadList[i].start();
+            }
 
-			//Save with the the file names given
-			world.saveToFiles();
-		} catch (InterruptedException e) {
-			System.err.println("Error, threads interrupted");
-		}
-	}
+            for(int i = 0; i != threadCount; i++) {
+                threadList[i].join();
+            }
+
+            //Save with the the file names given
+            world.saveToFiles();
+        } catch (InterruptedException e) {
+            System.err.println("Error, threads interrupted");
+        }
+    }
 
     public static void main(String... args) {
         final int argCount = args.length;

@@ -21,27 +21,27 @@ public class KDTree {
     }
     
     public void rebalance() {
-	    readWriteLock.writeLock().lock();
-	    ArrayList<XYHolder> allPoints = new ArrayList<>();
-	    getAllPoints(allPoints);
-	    root = new KDNode(allPoints, 0);
-	     readWriteLock.writeLock().unlock();
-	}
+        readWriteLock.writeLock().lock();
+        ArrayList<XYHolder> allPoints = new ArrayList<>();
+        getAllPoints(allPoints);
+        root = new KDNode(allPoints, 0);
+         readWriteLock.writeLock().unlock();
+    }
     
     public void insert(XYHolder xy) {
-	readWriteLock.writeLock().lock();
+    readWriteLock.writeLock().lock();
         if (root == null) {
             root = new KDNode(xy,0);
         } else {
             KDNode toInsertAt = findNodeFor(root, xy);
             if (toInsertAt.pointEqualsPointAtNode(xy)) {
-     	        readWriteLock.writeLock().unlock();
+                readWriteLock.writeLock().unlock();
                 return; //Already in the tree
             }
             toInsertAt.addChild(xy);
         }
         count++;
-	readWriteLock.writeLock().unlock();
+    readWriteLock.writeLock().unlock();
     }
 
     private KDNode findNodeFor(KDNode root, XYHolder xyToFind) {
@@ -58,9 +58,9 @@ public class KDTree {
     }
 
     public void getAllPoints(AbstractList<XYHolder> list) {
-	    readWriteLock.readLock().lock();
+        readWriteLock.readLock().lock();
         getAllPoints(root, list);
-	    readWriteLock.readLock().unlock();
+        readWriteLock.readLock().unlock();
     }
 
     private void getAllPoints(KDNode node, AbstractList<XYHolder> list) {
@@ -78,9 +78,9 @@ public class KDTree {
             return false;
         }
 
-	    readWriteLock.readLock().lock();
+        readWriteLock.readLock().lock();
         KDNode closestPointNode = findNodeFor(root, xy);
-	    readWriteLock.readLock().unlock();
+        readWriteLock.readLock().unlock();
         return closestPointNode.pointEqualsPointAtNode(xy);
     }
 
@@ -90,9 +90,9 @@ public class KDTree {
             return null;
         }
 
-	    readWriteLock.readLock().lock();
+        readWriteLock.readLock().lock();
         KDNode closestNode = nearestNeighbour(root, xy, new FindResult()).node;
-	    readWriteLock.readLock().unlock();
+        readWriteLock.readLock().unlock();
 
         if (closestNode == null) return null;
 

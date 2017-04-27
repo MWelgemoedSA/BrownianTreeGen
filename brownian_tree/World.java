@@ -9,32 +9,32 @@ import datastructure.XYHolder;
 import java.util.ArrayList;
 
 public class World {
-	private final int xSize;
-	private final int ySize;
-	private final KDTree placedPointsTree; //Contains points, used for efficient nearest neighbour search
+    private final int xSize;
+    private final int ySize;
+    private final KDTree placedPointsTree; //Contains points, used for efficient nearest neighbour search
 
     private String imageFileName = null;
     private String pointFileName = null;
     private int targetPixelCount = 0; //If given, used for the colouring
 
-	public World(int xSize, int ySize, KDTree treeToUse) {
-		this.xSize = xSize;
-		this.ySize = ySize;
-		this.placedPointsTree = treeToUse;
-	}
+    public World(int xSize, int ySize, KDTree treeToUse) {
+        this.xSize = xSize;
+        this.ySize = ySize;
+        this.placedPointsTree = treeToUse;
+    }
 
     public World(int xsize, int ysize) {
-	    this.xSize = xsize;
-	    this.ySize = ysize;
-	    this.placedPointsTree = new KDTree();
+        this.xSize = xsize;
+        this.ySize = ysize;
+        this.placedPointsTree = new KDTree();
     }
 
     static World createFromFile(String fileToLoad) {
-	    assert fileToLoad != null;
+        assert fileToLoad != null;
 
-	    int xSize = 0;
-	    int ySize = 0;
-	    KDTree placedPointsTree = null;
+        int xSize = 0;
+        int ySize = 0;
+        KDTree placedPointsTree = null;
 
         try {
             try (
@@ -70,42 +70,42 @@ public class World {
     }
 
     void placeCenterPixel() {
-		Coordinate c = new Coordinate(xSize/2, ySize/2);
-		c.fillExtraFields(0, "Init");
-		place(c);
-	}
+        Coordinate c = new Coordinate(xSize/2, ySize/2);
+        c.fillExtraFields(0, "Init");
+        place(c);
+    }
 
-	int getXSize() {return xSize;}
-	int getYSize() {return ySize;}
+    int getXSize() {return xSize;}
+    int getYSize() {return ySize;}
 
-	boolean hasPixel(Coordinate c) {
-		return placedPointsTree.contains(c);
-	}
-		
-	double getDistanceToNearestPixel(Coordinate toCheck) {
-		assert this.getPixelCount() > 0;
-		
-		XYHolder nearestPoint = placedPointsTree.nearestNeighbour(toCheck);
-		
-		return distanceBetweenCoordinates(toCheck, nearestPoint);
-	}
-	
-	private double distanceBetweenCoordinates(XYHolder c1, XYHolder c2) {
-		return Math.sqrt(Math.pow(c1.getX() - c2.getX(), 2) + Math.pow(c1.getY() - c2.getY(), 2));
-	}
-	
-	int getPixelCount() {
-		return placedPointsTree.size();
-	}
-	
-	void place(Coordinate c) {
-		placedPointsTree.insert(c);
-		//if (getPixelCount() % 10_000 == 0) {
-		//	long start = System.currentTimeMillis();
-		//	placedPointsTree.rebalance();
-		//	System.out.println("Tree rebalance finished in " + (System.currentTimeMillis()-start) + "ms");
-		//}
-	}
+    boolean hasPixel(Coordinate c) {
+        return placedPointsTree.contains(c);
+    }
+
+    double getDistanceToNearestPixel(Coordinate toCheck) {
+        assert this.getPixelCount() > 0;
+
+        XYHolder nearestPoint = placedPointsTree.nearestNeighbour(toCheck);
+
+        return distanceBetweenCoordinates(toCheck, nearestPoint);
+    }
+
+    private double distanceBetweenCoordinates(XYHolder c1, XYHolder c2) {
+        return Math.sqrt(Math.pow(c1.getX() - c2.getX(), 2) + Math.pow(c1.getY() - c2.getY(), 2));
+    }
+
+    int getPixelCount() {
+        return placedPointsTree.size();
+    }
+
+    void place(Coordinate c) {
+        placedPointsTree.insert(c);
+        //if (getPixelCount() % 10_000 == 0) {
+        //	long start = System.currentTimeMillis();
+        //	placedPointsTree.rebalance();
+        //	System.out.println("Tree rebalance finished in " + (System.currentTimeMillis()-start) + "ms");
+        //}
+    }
 
     void saveToFiles() {
         this.saveToFiles(this.imageFileName, this.pointFileName);
@@ -125,11 +125,11 @@ public class World {
         placedPointsTree.getAllPoints(pointList);
 
         //Background
-		for (int x = 0; x < xSize; x++) {
-			for (int y = 0; y < ySize; y++) {
-		        	image.setRGB(x, y, 0xffffff); //White
-			}
-		}
+        for (int x = 0; x < xSize; x++) {
+            for (int y = 0; y < ySize; y++) {
+                    image.setRGB(x, y, 0xffffff); //White
+            }
+        }
 
         try {
             FileWriter pointWriter = new FileWriter(pointFileName);
@@ -143,33 +143,33 @@ public class World {
             System.err.println("Error outputting points: " + pointFileName);
         }
 
-		//Draw the tree
-		int maxPixelValue = targetPixelCount;
-		if (maxPixelValue == 0) {
+        //Draw the tree
+        int maxPixelValue = targetPixelCount;
+        if (maxPixelValue == 0) {
             maxPixelValue = placedPointsTree.size();
         }
 
-		int factorForRGB = (int)Math.pow(2, 24) / maxPixelValue; //RGB as a 24 bit int is spread out evenly across the pixels, which creates a nice wavy pattern from dark to light
-		for (XYHolder xy : pointList) {
-			Coordinate c = (Coordinate)xy;
-			int rgb = c.getPixelNumber() * factorForRGB;
+        int factorForRGB = (int)Math.pow(2, 24) / maxPixelValue; //RGB as a 24 bit int is spread out evenly across the pixels, which creates a nice wavy pattern from dark to light
+        for (XYHolder xy : pointList) {
+            Coordinate c = (Coordinate)xy;
+            int rgb = c.getPixelNumber() * factorForRGB;
 
-			image.setRGB((int)c.getX(), (int)c.getY(), rgb);
-		}
+            image.setRGB((int)c.getX(), (int)c.getY(), rgb);
+        }
 
-		File imageOutputFile = new File(imageFileName);
-		try {
-			ImageIO.write(image, "png", imageOutputFile);
-		} catch (IOException e) {
-			System.err.println("Error outputting image: " + imageOutputFile);
-		}
-	}
+        File imageOutputFile = new File(imageFileName);
+        try {
+            ImageIO.write(image, "png", imageOutputFile);
+        } catch (IOException e) {
+            System.err.println("Error outputting image: " + imageOutputFile);
+        }
+    }
 
     public void setExportFileName(String imageFileName, String pointFileName) {
-	    assert imageFileName != null;
-	    assert pointFileName != null;
-	    this.imageFileName = imageFileName;
-	    this.pointFileName = pointFileName;
+        assert imageFileName != null;
+        assert pointFileName != null;
+        this.imageFileName = imageFileName;
+        this.pointFileName = pointFileName;
     }
 
     public void setTargetPixelCount(int targetPixelCount) {
