@@ -7,31 +7,31 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.ArrayList;
 
 public class KDTree {
-    private  KDNode root = null;
+    private KDNode root = null;
     private int count;
     private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     public KDTree() {
-            count = 0;
-        }
+        count = 0;
+    }
 
     public KDTree(AbstractList<XYHolder> xyList) {
         root = new KDNode(xyList, 0);
         count = xyList.size();
     }
-    
+
     public void rebalance() {
         readWriteLock.writeLock().lock();
         ArrayList<XYHolder> allPoints = new ArrayList<>();
         getAllPoints(allPoints);
         root = new KDNode(allPoints, 0);
-         readWriteLock.writeLock().unlock();
+        readWriteLock.writeLock().unlock();
     }
-    
+
     public void insert(XYHolder xy) {
-    readWriteLock.writeLock().lock();
+        readWriteLock.writeLock().lock();
         if (root == null) {
-            root = new KDNode(xy,0);
+            root = new KDNode(xy, 0);
         } else {
             KDNode toInsertAt = findNodeFor(root, xy);
             if (toInsertAt.pointEqualsPointAtNode(xy)) {
@@ -41,7 +41,7 @@ public class KDTree {
             toInsertAt.addChild(xy);
         }
         count++;
-    readWriteLock.writeLock().unlock();
+        readWriteLock.writeLock().unlock();
     }
 
     private KDNode findNodeFor(KDNode root, XYHolder xyToFind) {
@@ -153,7 +153,7 @@ class KDNode {
         this.pointAtNode = pointAtNode;
         this.depth = depth;
     }
-    
+
     KDNode(AbstractList<XYHolder> xylist, int depth) {
         this.depth = depth;
 
@@ -165,12 +165,12 @@ class KDNode {
 
         AbstractList<XYHolder> leftPoints = new ArrayList<>(xylist.subList(0, median));
         if (!leftPoints.isEmpty()) {
-            this.left = new KDNode(leftPoints, depth+1);
+            this.left = new KDNode(leftPoints, depth + 1);
         }
 
-        AbstractList<XYHolder> rightPoints = new ArrayList<>(xylist.subList(median+1, xylist.size()));
+        AbstractList<XYHolder> rightPoints = new ArrayList<>(xylist.subList(median + 1, xylist.size()));
         if (!rightPoints.isEmpty()) {
-            this.right = new KDNode(rightPoints, depth+1);
+            this.right = new KDNode(rightPoints, depth + 1);
         }
     }
 
@@ -213,9 +213,9 @@ class KDNode {
 
     void addChild(XYHolder xy) {
         if (pointIsLeftOf(xy)) {
-            left = new KDNode(xy, depth+1);
+            left = new KDNode(xy, depth + 1);
         } else {
-            right = new KDNode(xy, depth+1);
+            right = new KDNode(xy, depth + 1);
         }
     }
 
@@ -236,7 +236,7 @@ class KDNode {
 
     double distanceTo(XYHolder xyToFind) {
         return Math.sqrt(Math.pow(getX() - xyToFind.getX(), 2) +
-                        Math.pow(getY() - xyToFind.getY(), 2)
-                );
+                Math.pow(getY() - xyToFind.getY(), 2)
+        );
     }
 }

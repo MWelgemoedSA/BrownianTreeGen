@@ -30,12 +30,12 @@ public class Generator {
 
             ReentrantLock placeLock = new ReentrantLock();
             Thread[] threadList = new Thread[threadCount];
-            for(int i = 0; i != threadCount; i++) {
-                threadList[i] = new GeneratorThread("Thread-" + (i+1), world, totalPixels, placeLock);
+            for (int i = 0; i != threadCount; i++) {
+                threadList[i] = new GeneratorThread("Thread-" + (i + 1), world, totalPixels, placeLock);
                 threadList[i].start();
             }
 
-            for(int i = 0; i != threadCount; i++) {
+            for (int i = 0; i != threadCount; i++) {
                 threadList[i].join();
             }
 

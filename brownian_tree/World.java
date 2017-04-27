@@ -3,6 +3,7 @@ package brownian_tree;
 import java.io.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+
 import datastructure.KDTree;
 import datastructure.XYHolder;
 
@@ -70,13 +71,18 @@ public class World {
     }
 
     void placeCenterPixel() {
-        Coordinate c = new Coordinate(xSize/2, ySize/2);
+        Coordinate c = new Coordinate(xSize / 2, ySize / 2);
         c.fillExtraFields(0, "Init");
         place(c);
     }
 
-    int getXSize() {return xSize;}
-    int getYSize() {return ySize;}
+    int getXSize() {
+        return xSize;
+    }
+
+    int getYSize() {
+        return ySize;
+    }
 
     boolean hasPixel(Coordinate c) {
         return placedPointsTree.contains(c);
@@ -118,7 +124,7 @@ public class World {
         saveToFiles(prefix + imageFileName, prefix + pointFileName);
     }
 
-    void saveToFiles(String imageFileName, String pointFileName) {
+    private void saveToFiles(String imageFileName, String pointFileName) {
         BufferedImage image = new BufferedImage(xSize, ySize, BufferedImage.TYPE_INT_RGB);
 
         ArrayList<XYHolder> pointList = new ArrayList<>();
@@ -127,7 +133,7 @@ public class World {
         //Background
         for (int x = 0; x < xSize; x++) {
             for (int y = 0; y < ySize; y++) {
-                    image.setRGB(x, y, 0xffffff); //White
+                image.setRGB(x, y, 0xffffff); //White
             }
         }
 
@@ -149,12 +155,12 @@ public class World {
             maxPixelValue = placedPointsTree.size();
         }
 
-        int factorForRGB = (int)Math.pow(2, 24) / maxPixelValue; //RGB as a 24 bit int is spread out evenly across the pixels, which creates a nice wavy pattern from dark to light
+        int factorForRGB = (int) Math.pow(2, 24) / maxPixelValue; //RGB as a 24 bit int is spread out evenly across the pixels, which creates a nice wavy pattern from dark to light
         for (XYHolder xy : pointList) {
-            Coordinate c = (Coordinate)xy;
+            Coordinate c = (Coordinate) xy;
             int rgb = c.getPixelNumber() * factorForRGB;
 
-            image.setRGB((int)c.getX(), (int)c.getY(), rgb);
+            image.setRGB((int) c.getX(), (int) c.getY(), rgb);
         }
 
         File imageOutputFile = new File(imageFileName);
@@ -165,14 +171,14 @@ public class World {
         }
     }
 
-    public void setExportFileName(String imageFileName, String pointFileName) {
+    void setExportFileName(String imageFileName, String pointFileName) {
         assert imageFileName != null;
         assert pointFileName != null;
         this.imageFileName = imageFileName;
         this.pointFileName = pointFileName;
     }
 
-    public void setTargetPixelCount(int targetPixelCount) {
+    void setTargetPixelCount(int targetPixelCount) {
         this.targetPixelCount = targetPixelCount;
     }
 }

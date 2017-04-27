@@ -85,13 +85,13 @@ class GeneratorThread extends Thread {
             c.x = newC.x;
             c.y = newC.y;
 
-            int distance  = (int)world.getDistanceToNearestPixel(c);
+            int distance = (int) world.getDistanceToNearestPixel(c);
             //System.out.println(newC + " dist " + distance);
-            if (distance > (maxX + maxY)*3) { //Too far, kill the pixel and restart
+            if (distance > (maxX + maxY) * 3) { //Too far, kill the pixel and restart
                 getInitialPosition(newC);
                 newC.resetCounts();
             } else if (distance > 3) {
-                newC.teleportToCircleEdge(distance-2);
+                newC.teleportToCircleEdge(distance - 2);
             } else {
                 newC.takeRandomStep(maxX, maxY);
             }
