@@ -33,7 +33,7 @@ public class Coordinate implements XYHolder{
 
     public Coordinate(String pointLine) {
         String[] parts = pointLine.split(";");
-        assert parts.length == 8;
+        assert parts.length == 9;
 
         this.x = Integer.parseInt(parts[0]);
         this.y = Integer.parseInt(parts[1]);
@@ -43,7 +43,7 @@ public class Coordinate implements XYHolder{
         this.timesReset = Integer.parseInt(parts[5]);
         this.teleportCount = Integer.parseInt(parts[6]);
         this.randomStepCount = Integer.parseInt(parts[7]);
-        this.findingThread = parts[7];
+        this.findingThread = parts[8];
     }
 
     void resetCounts() {
