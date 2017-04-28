@@ -2,20 +2,20 @@ package brownian_tree;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Generator {
+class Generator {
     private final World world;
     private final String imageFileName;
     private final String pointsFileName;
     private final int threadCount;
 
-    private Generator(int xsize, int ysize, int threadCount, String imageFileName, String pointsFileName) {
+    private Generator(int xSize, int ySize, int threadCount, String imageFileName, String pointsFileName) {
         this.threadCount = threadCount;
         this.imageFileName = imageFileName;
         this.pointsFileName = pointsFileName;
-        world = new World(xsize, ysize);
+        world = new World(xSize, ySize);
     }
 
-    public Generator(String fileToLoad, int threadCount, String imageFileName, String pointsFileName) {
+    private Generator(String fileToLoad, int threadCount, String imageFileName, String pointsFileName) {
         this.threadCount = threadCount;
         this.imageFileName = imageFileName;
         this.pointsFileName = pointsFileName;
@@ -34,11 +34,10 @@ public class Generator {
         String pointsFileName = "points.csv";
         String fileToLoad = null;
 
-        boolean loadFromImage = true;
         try {
             if (argCount == 0) {
-                System.err.println("Running with default paramaters " + xSize + " " + ySize + " " + pixelCount + " " + threadCount + " " + imageFileName + " " + pointsFileName);
-                System.err.println("Command line arguments are xSize, ySize, pixelCount, threadcount, all must be integers.");
+                System.err.println("Running with default parameters " + xSize + " " + ySize + " " + pixelCount + " " + threadCount + " " + imageFileName + " " + pointsFileName);
+                System.err.println("Command line arguments are xSize, ySize, pixelCount, threadCount, all must be integers.");
                 System.err.println("Can be followed by image filename and points csv filename");
                 System.err.println("Alternatively the first command line may be the string 'load', a csv to load and a maximum number of pixels to place before stopping. Optionally threadCount, image filename and a new csv filename.");
             }

@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 
-public class World {
+class World {
     private final int xSize;
     private final int ySize;
     private final KDTree placedPointsTree; //Contains points, used for efficient nearest neighbour search
@@ -17,15 +17,15 @@ public class World {
     private String pointFileName = null;
     private int targetPixelCount = 0; //If given, used for the colouring
 
-    public World(int xSize, int ySize, KDTree treeToUse) {
+    private World(int xSize, int ySize, KDTree treeToUse) {
         this.xSize = xSize;
         this.ySize = ySize;
         this.placedPointsTree = treeToUse;
     }
 
-    public World(int xsize, int ysize) {
-        this.xSize = xsize;
-        this.ySize = ysize;
+    World(int xSize, int ySize) {
+        this.xSize = xSize;
+        this.ySize = ySize;
         this.placedPointsTree = new KDTree();
     }
 

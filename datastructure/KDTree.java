@@ -9,7 +9,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class KDTree {
     private KDNode root = null;
     private int count;
-    private ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+    private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 
     public KDTree() {
         count = 0;
@@ -136,8 +136,8 @@ public class KDTree {
 }
 
 class KDNode {
-    private int depth; //0 is X, 1 is Y
-    private XYHolder pointAtNode;
+    private final int depth; //0 is X, 1 is Y
+    private final XYHolder pointAtNode;
     private KDNode left;
     private KDNode right;
 
@@ -146,21 +146,21 @@ class KDNode {
         this.depth = depth;
     }
 
-    KDNode(AbstractList<XYHolder> xylist, int depth) {
+    KDNode(AbstractList<XYHolder> xyList, int depth) {
         this.depth = depth;
 
-        xylist.sort(Comparator.comparingLong(this::getSplitValueOf));
+        xyList.sort(Comparator.comparingLong(this::getSplitValueOf));
 
-        int median = xylist.size() / 2;
-        //System.out.println("Median " + median + " " + xylist);
-        this.pointAtNode = xylist.get(median);
+        int median = xyList.size() / 2;
+        //System.out.println("Median " + median + " " + xyList);
+        this.pointAtNode = xyList.get(median);
 
-        AbstractList<XYHolder> leftPoints = new ArrayList<>(xylist.subList(0, median));
+        AbstractList<XYHolder> leftPoints = new ArrayList<>(xyList.subList(0, median));
         if (!leftPoints.isEmpty()) {
             this.left = new KDNode(leftPoints, depth + 1);
         }
 
-        AbstractList<XYHolder> rightPoints = new ArrayList<>(xylist.subList(median + 1, xylist.size()));
+        AbstractList<XYHolder> rightPoints = new ArrayList<>(xyList.subList(median + 1, xyList.size()));
         if (!rightPoints.isEmpty()) {
             this.right = new KDNode(rightPoints, depth + 1);
         }
@@ -205,10 +205,6 @@ class KDNode {
             return xy.getX();
         }
         return xy.getY();
-    }
-
-    boolean hasChildren() {
-        return left != null && right != null;
     }
 
     void addChild(XYHolder xy) {

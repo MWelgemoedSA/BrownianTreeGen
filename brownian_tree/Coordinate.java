@@ -5,7 +5,7 @@ import datastructure.XYHolder;
 import java.util.Random;
 
 public class Coordinate implements XYHolder{
-    int x; //x and y are explictly package private for speed
+    int x; //x and y are explicitly package private for speed
     int y;
     private Random randomGen;
 
@@ -21,17 +21,12 @@ public class Coordinate implements XYHolder{
     //Used to colour the png pixel
     private int pixelNumber = -1;
 
-    public Coordinate() {
-        x = 0;
-        y = 0;
-    }
-
-    public Coordinate(int x, int y) {
+    Coordinate(int x, int y) {
         this.x = x;
         this.y = y;
     }
 
-    public Coordinate(String pointLine) {
+    Coordinate(String pointLine) {
         String[] parts = pointLine.split(";");
         assert parts.length == 9;
 
@@ -109,15 +104,15 @@ public class Coordinate implements XYHolder{
         this.randomStepCount++;
 
         //Calculate the step to take
-        int xstep = 0;
-        int ystep = 0;
-        while(xstep == 0 && ystep == 0) { //0 step not allowed
-            xstep = randomGen.nextInt(3) - 1;
-            ystep = randomGen.nextInt(3) - 1;
+        int xStep = 0;
+        int yStep = 0;
+        while(xStep == 0 && yStep == 0) { //0 step not allowed
+            xStep = randomGen.nextInt(3) - 1;
+            yStep = randomGen.nextInt(3) - 1;
         }
 
-        this.x += xstep;
-        this.y += ystep;
+        this.x += xStep;
+        this.y += yStep;
 
         this.wrapAround(maxX, maxY); //Wrap around the edge of the world
     }
