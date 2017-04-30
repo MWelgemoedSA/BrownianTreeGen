@@ -6,7 +6,7 @@ This is a fairly simple java exercise I did mainly for myself.
 
 I did add some optimizations, although I suspect it could be made a lot more efficient with further work.
 
-#Command line arguments
+##Command line arguments
 
 Command line arguments are xSize, ySize, pixelCount, threadCount, all must be integers. Can be followed by image filename and points csv filename");
 Alternatively the first command line may be the string 'load', a csv to load and a maximum number of pixels to place before stopping. Optionally threadCount, image filename and a new csv filename."
@@ -15,7 +15,7 @@ Example of a Brownian Tree generated with it:
 
 ![Brownian Tree](https://raw.githubusercontent.com/MWelgemoedSA/BrownianTreeGen/master/ReadmeImages/BrownianTree.gif)
 
-#Algorithm for generation:
+##Algorithm for generation:
 
 Fundamentally a brownian tree is taking a single point, moving it about randomly (in my case taking a random step to any neighbouring pixel). If the point attempts to move into an existing pixel, it stops and becomes fixed at the position where it attempted the move.
 
